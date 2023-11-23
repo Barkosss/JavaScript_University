@@ -8,11 +8,11 @@ const auto = require('./auto.js');
 
 const lenArgs = process.argv.length;
 const keys = process.argv.slice(2, lenArgs - 3);
-const method = process.argv[-3];
-const stringFile = process.argv[-2];
-const substringFile = process.argv[-1];
+const method = process.argv[lenArgs - 3];
+const stringFile = process.argv[lenArgs - 2];
+const substringFile = process.argv[lenArgs - 1];
 
-if (fs.existsSync(stringFile) || fs.existsSync(substringFile)) {
+if (!fs.existsSync(stringFile) || !fs.existsSync(substringFile)) {
     return console.log('String file and/or substring file is not found');
 }
 
