@@ -1,8 +1,8 @@
 const fs = require('fs');
 
 module.exports.run = async(stringFile, substringFile) => {
-    const string = fs.readFileSync(stringFile, 'utf8');
-    const substring = fs.readFileSync(substringFile, 'utf8');
+    const string = fs.readFileSync(stringFile, 'utf8').toLowerCase();
+    const substring = fs.readFileSync(substringFile, 'utf8').toLowerCase();
 
     if (string.length < substring.length) {
         return console.log("The length of the string must not be shorter than the length of the substring!");
