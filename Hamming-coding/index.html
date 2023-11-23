@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Hamming algorithm</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+    <div class="content">
+        <h1>Hamming algorithm</h1>
+        <div class="row">
+            <label>Original message</label>
+            <input id="message" minlength="4" maxlength="4" onkeypress="return checkTwoNumber(event)">
+            <input type="button" id="button" onclick="encode()" value="Encode" disabled="true">
+            <span id="errorInputMessage"></span>
+        </div>
+        <div class="row">
+            <label>Encode message</label>
+            <input id="encodeMessage" minlength="7" maxlength="7" onkeypress="return checkTwoNumber(event)" disabled="true">
+            <input type="button" id="encodeButton" onclick="decode()" value="Decode" disabled="true">
+            <span id="errorEncodeMessage"></span>        
+        </div>
+        <div class="row">
+            <label>Result</label>
+            <input id="resultMessage" readonly>
+            <input type="button" id="reset" onclick="reset()" value="Reset">
+            <span id="information"></span>        
+        </div>
+        <div class="button">
+            <input type="button" id="editTheme" onclick="editTheme()" value="Edit theme">
+        </div>
+    </div>
+</body>
+</html>
