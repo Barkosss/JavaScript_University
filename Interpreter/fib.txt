@@ -1,0 +1,28 @@
+.data
+// fn
+#3 0
+// f1
+#1 0
+// f2
+#2 1
+.code
+// n - #4
+input int #4
+cmp #4 0
+je :end_for
+// eax - #5 - Счётчик
+mov #5 2
+:start_for
+    cmp #4 1
+    je :end_for
+    mov #6 #1
+    add #1 #1 #2
+    mov #3 #1
+    mov #2 #6
+    cmp #5 #4
+    je :end_for
+    add #5 #5 1
+    jmp :start_for
+:end_for
+output #3
+end

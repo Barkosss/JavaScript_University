@@ -1,0 +1,24 @@
+.data
+maxDiv 1
+ecx 1
+nol 0
+
+.code
+input n1
+input n2
+max ebx n1 n2
+min emx n1 n2
+:for_start
+    mov eax ebx
+    max ebx eax emx
+    min emx eax emx
+    diff ecx ebx emx
+    cmp ecx 0
+    je :for_end
+    abs ecx
+    mov ebx ecx
+    jmp :for_start
+:for_end
+
+output ebx
+end
