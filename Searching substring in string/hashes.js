@@ -1,44 +1,112 @@
 const fs = require('fs');
 
+
+/*
+-с - помимо списка вхождений вывести число коллизий (только хэши);
+-n N, где N - произвольное натуральное число - вывести первые N вхождений;
+-t - вывести время работы алгоритма.
+*/
+
+
+// Hashes: Сумма кодов
 module.exports.sum = async(keys, stringFile, substringFile) => {
+    let time = performance.now(); // Начало работы алгоритма
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
     
     let arrayIndex = []; // Массив индексов
+    // Сумма строки, Сумма подстроки, Счётчик совпадений
     let sumString; let sumSubstring = 0; let counter;
     for(let i = 0; i < substring.length; i++) {
+        // Сумма ASCII у подстроки
         sumSubstring += substring[i].charCodeAt();
     }
 
     for(let i = 0; i < string.length - substring.length + 1; i++) {
-        sumString = 0;
+        sumString = 0; // Обнуление суммы строки
         for(let j = 0; j < substring.length; j++) {
+            // Сумма ASCII у строки
             sumString += string[i + j].charCodeAt();
         }
 
         if (sumString != sumSubstring) continue // Если сумма не равна
         counter = 0;
         for(let j = 0; j < substring.length; j++) {
-            if (string[i + j] != substring[j]) break;
+            if (string[i + j] != substring[j]) break; // Если какие-то символы не совпадают, то выходим из цикла
             counter++;
         }
 
+        // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
     }
 
-    console.log(arrayIndex);
+    time = performance.now() - time; // Конец работы алгоритма
+    if (keys.indexOf('-c') != -1);
+    if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
+    if (keys.some(element => element.startsWith('-n'))) { // Если был найден ключ на вывод N элементов
+        let number = parseInt(keys[keys.findIndex(element => element.startsWith('-n')) + 1]); // Получаем следующий элемент. Это количество, сколько элементов надо вывести
+        if (number < 0) return console.log('The number of elements per output must be at least 0'); // Ошибка, если количество меньше 0
+        console.log(arrayIndex.slice(0, number));
+    } else console.log(arrayIndex); // Если не был найден ключ не вывод определённого кол-ва элементов
 }
 
+// Hashes: Сумма квадратов кодов
 module.exports.sumSquare = async(keys, stringFile, substringFile) => {
+    let time = performance.now(); // Начало работы алгоритма
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
-
     
+    let arrayIndex = []; // Массив индексов
+    // Сумма строки, Сумма подстроки, Счётчик совпадений
+    let sumString; let sumSubstring = 0; let counter;
+    for(let i = 0; i < substring.length; i++) {
+        // Сумма ASCII у подстроки
+        sumSubstring += substring[i].charCodeAt() ** 2;
+    }
+
+    for(let i = 0; i < string.length - substring.length + 1; i++) {
+        sumString = 0; // Обнуление суммы строки
+        for(let j = 0; j < substring.length; j++) {
+            // Сумма ASCII у строки
+            sumString += string[i + j].charCodeAt() ** 2;
+        }
+
+        if (sumString != sumSubstring) continue // Если сумма не равна
+        counter = 0;
+        for(let j = 0; j < substring.length; j++) {
+            if (string[i + j] != substring[j]) break; // Если какие-то символы не совпадают, то выходим из цикла
+            counter++;
+        }
+
+        // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
+        if (counter == substring.length) arrayIndex.push(i);
+    }
+
+    time = performance.now() - time; // Конец работы алгоритма
+    if (keys.indexOf('-c') != -1);
+    if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
+    if (keys.some(element => element.startsWith('-n'))) { // Если был найден ключ на вывод N элементов
+        let number = parseInt(keys[keys.findIndex(element => element.startsWith('-n')) + 1]); // Получаем следующий элемент. Это количество, сколько элементов надо вывести
+        if (number < 0) return console.log('The number of elements per output must be at least 0'); // Ошибка, если количество меньше 0
+        console.log(arrayIndex.slice(0, number));
+    } else console.log(arrayIndex); // Если не был найден ключ не вывод определённого кол-ва элементов
 }
 
+// Hashes: Рабина-Карпа
 module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
+    let time = performance.now(); // Начало работы алгоритма
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
 
+    let arrayIndex = []; // Массив индексов
     
+    
+    time = performance.now() - time; // Конец работы алгоритма
+    if (keys.indexOf('-c') != -1);
+    if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
+    if (keys.some(element => element.startsWith('-n'))) { // Если был найден ключ на вывод N элементов
+        let number = parseInt(keys[keys.findIndex(element => element.startsWith('-n')) + 1]); // Получаем следующий элемент. Это количество, сколько элементов надо вывести
+        if (number < 0) return console.log('The number of elements per output must be at least 0'); // Ошибка, если количество меньше 0
+        console.log(arrayIndex.slice(0, number));
+    } else console.log(arrayIndex); // Если не был найден ключ не вывод определённого кол-ва элементов
 }

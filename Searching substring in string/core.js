@@ -6,6 +6,7 @@ const hashes = require('./hashes.js');
 const auto = require('./auto.js');
 // Методы
 
+
 const lenArgs = process.argv.length;
 const keys = process.argv.slice(2, lenArgs - 3);
 const method = process.argv[lenArgs - 3];
@@ -22,7 +23,7 @@ switch(method.toLowerCase()) {
     case 'brute-force': {}
     case 'bruteforce': {}
     case 'b': {
-        bruteForce.run(stringFile, substringFile);
+        bruteForce.run(keys, stringFile, substringFile);
         break;
     }
 
