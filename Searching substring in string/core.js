@@ -29,6 +29,7 @@ switch(method.toLowerCase()) {
     // Метод Hashes: Сумма кодов
     case 'hashes-sum': {}
     case 'hashessum': {}
+    case 'hs': {}
     case 'h1': {
         hashes.sum(keys, stringFile, substringFile);
         break;
@@ -37,6 +38,7 @@ switch(method.toLowerCase()) {
     // Метод Hashes: Сумма квадратов кодов
     case 'hashes-sum-square': {}
     case 'hashessumsquare': {}
+    case 'hss': {}
     case 'h2': {
         hashes.sumSquare(keys, stringFile, substringFile);
         break;
@@ -45,6 +47,7 @@ switch(method.toLowerCase()) {
     // Метод Hashes: Рабина-Карпа
     case 'hashes-rabina-karp': {}
     case 'hashesrabinakarp': {}
+    case 'hrk': {}
     case 'h3': {
         hashes.rabinaKarp(keys, stringFile, substringFile);
         break;
