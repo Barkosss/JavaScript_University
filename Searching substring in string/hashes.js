@@ -92,13 +92,15 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     } else console.log(arrayIndex); // Если не был найден ключ не вывод определённого кол-ва элементов
 }
 
-// Hashes: Рабина-Карпа
+// Hashes: Рабина-Карпа1 (Хэш-функция: MD5)
 module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
-    let time = performance.now(); // Начало работы алгоритма
+    const { MD5 } = require('./md5.js');
+    var time = performance.now(); // Начало работы алгоритма
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
-
-    let arrayIndex = []; // Массив индексов
+    
+    var md5String = MD5(string);
+    var md5Substring = MD5(substring);
     
     
     time = performance.now() - time; // Конец работы алгоритма
