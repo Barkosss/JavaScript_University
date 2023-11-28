@@ -11,6 +11,7 @@ const fs = require('fs');
 // Hashes: Сумма кодов
 module.exports.sum = async(keys, stringFile, substringFile) => {
     let time = performance.now(); // Начало работы алгоритма
+    let counterCollision = 0;
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
     
@@ -31,6 +32,7 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
 
         if (sumString != sumSubstring) continue // Если сумма не равна
         counter = 0;
+        counterCollision++;
         for(let j = 0; j < substring.length; j++) {
             if (string[i + j] != substring[j]) break; // Если какие-то символы не совпадают, то выходим из цикла
             counter++;
@@ -41,7 +43,7 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
     }
 
     time = performance.now() - time; // Конец работы алгоритма
-    if (keys.indexOf('-c') != -1);
+    if (keys.indexOf('-c') != -1) console.log(`Collision: ${counterCollision}`);
     if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
     if (keys.some(element => element.startsWith('-n'))) { // Если был найден ключ на вывод N элементов
         let number = parseInt(keys[keys.findIndex(element => element.startsWith('-n')) + 1]); // Получаем следующий элемент. Это количество, сколько элементов надо вывести
@@ -53,6 +55,7 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
 // Hashes: Сумма квадратов кодов
 module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     let time = performance.now(); // Начало работы алгоритма
+    let counterCollision = 0;
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
     
@@ -73,6 +76,7 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
 
         if (sumString != sumSubstring) continue // Если сумма не равна
         counter = 0;
+        counterCollision++;
         for(let j = 0; j < substring.length; j++) {
             if (string[i + j] != substring[j]) break; // Если какие-то символы не совпадают, то выходим из цикла
             counter++;
@@ -83,7 +87,7 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     }
 
     time = performance.now() - time; // Конец работы алгоритма
-    if (keys.indexOf('-c') != -1);
+    if (keys.indexOf('-c') != -1) console.log(`Collision: ${counterCollision}`);
     if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
     if (keys.some(element => element.startsWith('-n'))) { // Если был найден ключ на вывод N элементов
         let number = parseInt(keys[keys.findIndex(element => element.startsWith('-n')) + 1]); // Получаем следующий элемент. Это количество, сколько элементов надо вывести
@@ -94,17 +98,18 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
 
 // Hashes: Рабина-Карпа1 (Хэш-функция: MD5)
 module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
-    const { MD5 } = require('./md5.js');
     var time = performance.now(); // Начало работы алгоритма
+    let counterCollision = 0;
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
     
-    var md5String = MD5(string);
-    var md5Substring = MD5(substring);
-    
+    let subString = 0;
+    for(let i = 0; i < substring.length; i++) {
+        sumString += 0 // ...
+    }
     
     time = performance.now() - time; // Конец работы алгоритма
-    if (keys.indexOf('-c') != -1);
+    if (keys.indexOf('-c') != -1) console.log(`Collision: ${counterCollision}`);
     if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
     if (keys.some(element => element.startsWith('-n'))) { // Если был найден ключ на вывод N элементов
         let number = parseInt(keys[keys.findIndex(element => element.startsWith('-n')) + 1]); // Получаем следующий элемент. Это количество, сколько элементов надо вывести
