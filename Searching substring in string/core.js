@@ -14,6 +14,17 @@ const method = process.argv[lenArgs - 3]; // Метод, который испо
 const stringFile = process.argv[lenArgs - 2]; // Файл со строкой
 const substringFile = process.argv[lenArgs - 1]; // Файл с подстрокой
 
+
+// Создание рандомной строк, которая будет записана в string.txt
+if (keys.indexOf('-create') != -1) {
+    let string = '';
+    let counter = Math.floor(Math.random() * 10_000); // Рандомное кол-во символов в строке
+    for(let i = 0; i < counter; i++) string += String.fromCharCode(Math.floor(Math.random() * (226 - 1) + 1));
+    fs.writeFileSync(stringFile, string);
+}
+// Создание рандомной строк, которая будет записана в string.txt
+
+
 // Проверка на существование файла со строкой и файла с подстрокой
 if (!fs.existsSync(stringFile) || !fs.existsSync(substringFile)) {
     return console.log('String file and/or substring file are not found');
@@ -23,6 +34,7 @@ if (!fs.existsSync(stringFile) || !fs.existsSync(substringFile)) {
 if (!fs.readFileSync(stringFile, 'utf-8').length || !fs.readFileSync(substringFile, 'utf-8').length) {
     return console.log('String file and/of substring file are empty')
 }
+
 
 switch(method.toLowerCase()) {
 

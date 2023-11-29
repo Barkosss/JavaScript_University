@@ -111,15 +111,10 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
 
     let sumString = 0;
 
-    for(let i = 0; i < string.length - substring.length + 1; i++) {
-
-        /* Переработать цикл:
-        Сделать так, чтобы хэш подстроки вычислялся через вычитание первого символа и сложение следующего символа.
-        Тем самым, мы получим новый хэш подстроки не используя цикл
-        */
-        for(let j = 0 ; j < substring.length; j++) {
-            sumString += string[i].charCodeAt() * 2 ** (string.length - j - 1);
-        }
+    for(let i = 0; i < substring.length; i++) {
+        sumString += string[i].charCodeAt();
+    }
+    for(let i = substring.length; i < string.length - substring.length + 1; i++) {
 
         if (sumString != sumSubstring) continue // Если сумма не равна
         counter = 0;
@@ -131,6 +126,9 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
 
         // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
+
+        sumString += string[i].charCodeAt
+        sumString -= string[i - substring.length].charCodeAt();
     }
     
     time = performance.now() - time; // Конец работы алгоритма
