@@ -80,4 +80,9 @@ switch(method.toLowerCase()) {
         auto.run(stringFile, substringFile);
         break;
     }
+
+    default: {
+        console.log(`Command: core.js (-c | -n N | -t) [b | h1 | h2 | h3] string.txt substring.txt`)
+        break;
+    }
 }
