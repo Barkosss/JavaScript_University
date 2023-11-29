@@ -31,8 +31,8 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
         }
 
         if (sumString != sumSubstring) continue // Если сумма не равна
-        counter = 0;
         counterCollision++;
+        counter = 0;
         for(let j = 0; j < substring.length; j++) {
             if (string[i + j] != substring[j]) break; // Если какие-то символы не совпадают, то выходим из цикла
             counter++;
@@ -112,7 +112,7 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     let sumString = 0;
 
     for(let i = 0; i < substring.length; i++) {
-        sumString += string[i].charCodeAt();
+        sumString += string[i].charCodeAt() * 2 ** (substring.length - i - 1);
     }
     for(let i = substring.length; i < string.length - substring.length + 1; i++) {
 
@@ -127,8 +127,8 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
         // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
 
-        sumString += string[i].charCodeAt
-        sumString -= string[i - substring.length].charCodeAt();
+        sumString += string[i].charCodeAt(); // Добавление кода следующего символа
+        sumString -= string[i - substring.length].charCodeAt(); // Вычитание кода первого символа
     }
     
     time = performance.now() - time; // Конец работы алгоритма

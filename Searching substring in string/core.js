@@ -3,9 +3,11 @@ const fs = require('fs');
 // Методы
 const bruteForce = require('./brute force.js'); // Метод: Brute Force (Грубая сила)
 const hashes = require('./hashes.js'); // Метод: Хэширование
+const boyer = require('./boyer-moore.js') // Метод: Бойер-Мур
 const auto = require('./auto.js'); // Метод: Автомат
 // Методы
 
+// node core.js |(..)| b string.txt substring.txt
 
 const lenArgs = process.argv.length; // Длина аргументов
 // Получаем массив из ключей (от 2, потому что первые два эл. это `node` и `*.js`, по lenArgs - 3, потому что три аргумента в конце гарантированно будут: метод, файл со строкой и файл с подстрокой)
@@ -77,7 +79,16 @@ switch(method.toLowerCase()) {
     case 'automatic': {}
     case 'automat': {}
     case 'auto': {
-        auto.run(stringFile, substringFile);
+        auto.run(keys, stringFile, substringFile);
+        break;
+    }
+
+    
+    // Метод Боейра-Мура
+    case 'boyer-moore': {}
+    case 'boyermoore': {}
+    case 'bm': {
+        boyer.run(keys, stringFile, substringFile);
         break;
     }
 
