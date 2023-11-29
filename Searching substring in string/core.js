@@ -8,7 +8,8 @@ const auto = require('./auto.js'); // Метод: Автомат
 
 
 const lenArgs = process.argv.length; // Длина аргументов
-const keys = process.argv.slice(2, lenArgs - 3); // Получаем массив из ключей (от 2, потому что первые два эл. это `node` и `*.js` по lenArgs - 3, потому что три аргумента в конце гарантированно будут: метод, файл со строкой и файл с подстрокой)
+// Получаем массив из ключей (от 2, потому что первые два эл. это `node` и `*.js`, по lenArgs - 3, потому что три аргумента в конце гарантированно будут: метод, файл со строкой и файл с подстрокой)
+const keys = process.argv.slice(2, lenArgs - 3);
 const method = process.argv[lenArgs - 3]; // Метод, который используется
 const stringFile = process.argv[lenArgs - 2]; // Файл со строкой
 const substringFile = process.argv[lenArgs - 1]; // Файл с подстрокой

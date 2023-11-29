@@ -96,16 +96,41 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     } else console.log(arrayIndex); // Если не был найден ключ не вывод определённого кол-ва элементов
 }
 
-// Hashes: Рабина-Карпа1 (Хэш-функция: MD5)
+// Hashes: Рабина-Карпа
 module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     var time = performance.now(); // Начало работы алгоритма
     let counterCollision = 0;
     const string = fs.readFileSync(stringFile, 'utf8');
     const substring = fs.readFileSync(substringFile, 'utf8');
     
-    let subString = 0;
+    let arrayIndex = [];
+    let sumSubstring = 0;
     for(let i = 0; i < substring.length; i++) {
-        sumString += 0 // ...
+        sumSubstring += substring[i].charCodeAt() * 2 ** (substring.length - i - 1) // Сумма хэшей у подстроки
+    }
+
+    let sumString = 0;
+
+    for(let i = 0; i < string.length - substring.length + 1; i++) {
+
+        /* Переработать цикл:
+        Сделать так, чтобы хэш подстроки вычислялся через вычитание первого символа и сложение следующего символа.
+        Тем самым, мы получим новый хэш подстроки не используя цикл
+        */
+        for(let j = 0 ; j < substring.length; j++) {
+            sumString += string[i].charCodeAt() * 2 ** (string.length - j - 1);
+        }
+
+        if (sumString != sumSubstring) continue // Если сумма не равна
+        counter = 0;
+        counterCollision++;
+        for(let j = 0; j < substring.length; j++) {
+            if (string[i + j] != substring[j]) break; // Если какие-то символы не совпадают, то выходим из цикла
+            counter++;
+        }
+
+        // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
+        if (counter == substring.length) arrayIndex.push(i);
     }
     
     time = performance.now() - time; // Конец работы алгоритма
