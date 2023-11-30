@@ -119,6 +119,7 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     }
     for(let i = substring.length; i < string.length - substring.length + 1; i++) {
 
+        console.log(string[i], sumString, sumSubstring, i);
         if (sumString != sumSubstring) continue // Если сумма не равна
         counter = 0;
         counterCollision++;
