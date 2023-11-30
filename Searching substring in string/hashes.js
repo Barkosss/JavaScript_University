@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-
 /*
 -с - помимо списка вхождений вывести число коллизий (только хэши);
 -n N, где N - произвольное натуральное число - вывести первые N вхождений;
@@ -17,18 +16,19 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
     
     let arrayIndex = []; // Массив индексов
     // Сумма строки, Сумма подстроки, Счётчик совпадений
-    let sumString; let sumSubstring = 0; let counter;
+    let sumSubstring = 0; let counter;
     for(let i = 0; i < substring.length; i++) {
         // Сумма ASCII у подстроки
         sumSubstring += substring[i].charCodeAt();
     }
 
+    let sumString = 0; // Обнуление суммы строки
+    for(let j = 0; j < substring.length; j++) {
+        // Сумма ASCII у строки
+        sumString += string[i + j].charCodeAt();
+    }
+
     for(let i = 0; i < string.length - substring.length + 1; i++) {
-        sumString = 0; // Обнуление суммы строки
-        for(let j = 0; j < substring.length; j++) {
-            // Сумма ASCII у строки
-            sumString += string[i + j].charCodeAt();
-        }
 
         if (sumString != sumSubstring) continue // Если сумма не равна
         counterCollision++;
@@ -40,6 +40,8 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
 
         // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
+
+        sumString = sumString + string[i].charCodeAt() - string[i - substring.length - 1];
     }
 
     time = performance.now() - time; // Конец работы алгоритма
@@ -61,18 +63,18 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     
     let arrayIndex = []; // Массив индексов
     // Сумма строки, Сумма подстроки, Счётчик совпадений
-    let sumString; let sumSubstring = 0; let counter;
+    let sumSubstring = 0; let counter;
     for(let i = 0; i < substring.length; i++) {
         // Сумма ASCII у подстроки
         sumSubstring += substring[i].charCodeAt() ** 2;
     }
 
+    let sumString = 0; // Обнуление суммы строки
+    for(let j = 0; j < substring.length; j++) {
+        // Сумма ASCII у строки
+        sumString += string[i + j].charCodeAt() ** 2;
+    }
     for(let i = 0; i < string.length - substring.length + 1; i++) {
-        sumString = 0; // Обнуление суммы строки
-        for(let j = 0; j < substring.length; j++) {
-            // Сумма ASCII у строки
-            sumString += string[i + j].charCodeAt() ** 2;
-        }
 
         if (sumString != sumSubstring) continue // Если сумма не равна
         counter = 0;
@@ -84,6 +86,8 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
 
         // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
+
+        sumString = sumString + (string[i].charCodeAt() ** 2) - (string[i - substring.length - 1].charCodeAt() ** 2);
     }
 
     time = performance.now() - time; // Конец работы алгоритма
@@ -110,7 +114,6 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     }
 
     let sumString = 0;
-
     for(let i = 0; i < substring.length; i++) {
         sumString += string[i].charCodeAt() * 2 ** (substring.length - i - 1);
     }
@@ -127,8 +130,8 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
         // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
 
-        sumString += string[i].charCodeAt() * 2 ** (substring.length - i - 1); // Добавление кода следующего символа
-        sumString -= string[i - substring.length].charCodeAt() * 2 ** (substring.length - i - 1); // Вычитание кода первого символа
+
+        sumString = sumString * 2 + string[i + 1].charCodeAt() - string[i - substring.length].charCodeAt() * 2**substring.length;
     }
     
     time = performance.now() - time; // Конец работы алгоритма
