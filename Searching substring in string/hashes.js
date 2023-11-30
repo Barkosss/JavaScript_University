@@ -127,8 +127,8 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
         // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
 
-        sumString += string[i].charCodeAt(); // Добавление кода следующего символа
-        sumString -= string[i - substring.length].charCodeAt(); // Вычитание кода первого символа
+        sumString += string[i].charCodeAt() * 2 ** (substring.length - i - 1); // Добавление кода следующего символа
+        sumString -= string[i - substring.length].charCodeAt() * 2 ** (substring.length - i - 1); // Вычитание кода первого символа
     }
     
     time = performance.now() - time; // Конец работы алгоритма
