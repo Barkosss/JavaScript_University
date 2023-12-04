@@ -100,6 +100,14 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     } else console.log(arrayIndex); // Если не был найден ключ не вывод определённого кол-ва элементов
 }
 
+
+// Hashes: Рабина-Карпа (Новое)
+module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
+
+
+}
+
+
 // Hashes: Рабина-Карпа
 module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     var time = performance.now(); // Начало работы алгоритма
@@ -117,22 +125,28 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     for(let i = 0; i < substring.length; i++) {
         sumString += string[i].charCodeAt() * 2 ** (substring.length - i - 1);
     }
-    for(let i = substring.length; i < string.length - substring.length + 1; i++) {
+    for(let i = 0; i < string.length - substring.length + 1; i++) {
+        console.log('let:'+string[i], sumString, sumSubstring, i);
 
-        console.log(string[i], sumString, sumSubstring, i);
-        if (sumString != sumSubstring) continue // Если сумма не равна
+        if (sumString != sumSubstring) { // Если сумма не равна
+            sumString = sumString * 2 + string[i + 1].charCodeAt() - string[i].charCodeAt() * 2**substring.length;
+            continue
+        }
         counter = 0;
         counterCollision++;
         for(let j = 0; j < substring.length; j++) {
-            if (string[i + j] != substring[j]) break; // Если какие-то символы не совпадают, то выходим из цикла
+            if (string[i + j] != substring[j]) { // Если какие-то символы не совпадают, то выходим из цикла
+                console.log('break:', 'i+j:'+string[i+j], 'i:'+string[i], 'j:'+substring[j], sumString, sumSubstring, i, j);
+                sumString = sumString * 2 + string[i + 1].charCodeAt() - string[i].charCodeAt() * 2**substring.length;
+                break;
+            }
             counter++;
         }
 
         // Если кол-во совпадений равна длине подстроки, то добавляем индекс в массив
         if (counter == substring.length) arrayIndex.push(i);
 
-
-        sumString = sumString * 2 + string[i + 1].charCodeAt() - string[i - substring.length].charCodeAt() * 2**substring.length;
+        sumString = sumString * 2 + string[i + 1].charCodeAt() - string[i].charCodeAt() * 2**substring.length;
     }
     
     time = performance.now() - time; // Конец работы алгоритма

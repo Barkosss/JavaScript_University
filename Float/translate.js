@@ -53,15 +53,17 @@ module.exports.run = async (float) => {
     if (float[0] == '-') { memory[0] = 1; float = float.slice(1); } // Если число отрицательно
     var int = parseInt(float.split('.')[0]); // Целая часть
     var decimal = parseFloat('0.' + float.split('.')[1]); // Дробная часть
-    var intBin = intToBin(int);
-    var decimalBin = floatToBin(decimal);
-    var floatBin = intBin + decimalBin;
-    var degree = floatBin.indexOf('.') - floatBin.indexOf('1');
-    var fractionalPart = Number(floatBin + '0'.repeat(23 - floatBin.length)).toString();
-    console.log('0.', float);
-    console.log('1.', intBin, decimalBin);
-    console.log('2.', floatBin, degree, fractionalPart);
+    var binInt = intToBin(int); // Двоинчая запись целой части числа
+    var binDecimal = floatToBin(decimal); // Двоичная запись дробной части числа
+    
+    // Если бесконечное число
+    if (binInt.length + binDecimal > 8+23) {
+        for(let i = 1; i < 8+23+1; i++) {
+            memory[i] = 1;
+        }
+    } else { // Если не бесконечное число
 
-    for (let i = 1; i < memory.length - 1; i++) memory[i] = fractionalPart[i];
-    console.log(memory)
+    }
+    
+    console.log(memory);
 };
