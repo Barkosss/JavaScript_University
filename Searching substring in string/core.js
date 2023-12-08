@@ -93,7 +93,7 @@ switch(method.toLowerCase()) {
     }
 
     default: {
-        console.log(`Command: core.js (-c | -n N | -t) [b | h1 | h2 | h3] string.txt substring.txt`)
+        console.log(`Command: core.js (-c | -n N | -t | -a) [b | h1 | h2 | h3 | auto] string.txt substring.txt`)
         break;
     }
 }
