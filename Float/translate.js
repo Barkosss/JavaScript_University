@@ -7,7 +7,7 @@ const fs = require('fs');
 (-1) ^ S x 1.M x 10^E -- Экспоненциальная запись чисела
 S - Знак (Положительный или Отрицательный)
 M - Мантисса ()
-E - ЭКспонента ()
+E - Экспонента ()
 
 +беск: 0 11111111 00000000000000000000000
 -беск: 1 11111111 00000000000000000000000
@@ -46,6 +46,7 @@ const floatToBin = (number) => {
 };
 
 module.exports.run = async (float) => {
+    // ------------ ПЕРЕВОД ИЗ ДЕСЯТИЧНОЙ В ДВОИЧНУЮ ------------
     // 1 бит под знак
     // 8 бита под целую часть
     // 23 бита под дробную часть
@@ -55,15 +56,29 @@ module.exports.run = async (float) => {
     var decimal = parseFloat('0.' + float.split('.')[1]); // Дробная часть
     var binInt = intToBin(int); // Двоинчая запись целой части числа
     var binDecimal = floatToBin(decimal); // Двоичная запись дробной части числа
-    
-    // Если бесконечное число
-    if (binInt.length + binDecimal > 8+23) {
-        for(let i = 1; i < 8+23+1; i++) {
-            memory[i] = 1;
-        }
-    } else { // Если не бесконечное число
+    var bitFloat = binInt + binDecimal; // Двоичная запись дробного числа
+    var movePoint = binInt.length + 1 - bitFloat.indexOf('1'); // Индекс первого вхождения цифры 1
 
-    }
+    // Если бесконечное число
+    if (binInt.length > 8) for(let i = 1; i < 8; i++) memory[i] = 1;
+    // Если не бесконечное число
+    else for(let i = 1; i < 8; i++) for(let i = 1; i < 8; i++) memory[i] = Number(binInt[i - 1]);
+
+    // ...
     
-    console.log(memory);
+    
+    console.log(`${float} (10) -> ${memory.join('')} (2)`);
+    // ------------ ПЕРЕВОД ИЗ ДЕСЯТИЧНОЙ В ДВОИЧНУЮ ------------
+
+
+
+    // ------------ ПЕРЕВОД ИЗ ДВОИЧНОЙ В ДЕСЯТИЧНУЮ ------------
+    let bitSign = memory[0]; // Бит знака
+    let bitInt = memory.slice(1, 8); // Биты целой части числа
+    let bitDecimal = memory.slice(9, 32); // Биты дробной части числа
+    // ...
+    let bitFloat = (-1) ** bitSign * Number(`1.${bitInt}`) * 
+    // ...
+    console.log(`${memory.join('')} (2) -> ${0} (10)`)
+    // ------------ ПЕРЕВОД ИЗ ДВОИЧНОЙ В ДЕСЯТИЧНУЮ ------------
 };
