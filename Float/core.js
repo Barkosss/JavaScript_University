@@ -7,7 +7,7 @@ const argv = content.split(/[ ,]+/);
 if (!content.length) return console.log(`Less than one or more than three arguments are specified`);
 
 const translate = require('./translate.js');
-const expression = require('./expression.js');
+//const expression = require('./expression.js');
 
 switch(argv.length) {
 
@@ -17,7 +17,7 @@ switch(argv.length) {
     }
 
     case 3: { // Если указано три аргумента - Сложение/Вычитание
-        expression.run(argv)
+        //expression.run(argv)
         break;
     }
 
