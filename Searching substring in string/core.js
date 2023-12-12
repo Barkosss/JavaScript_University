@@ -3,7 +3,7 @@ const fs = require('fs');
 // Методы
 const bruteForce = require('./brute force.js'); // Метод: Brute Force (Грубая сила)
 const hashes = require('./hashes.js'); // Метод: Хэширование
-const boyer = require('./boyer-moore.js') // Метод: Бойер-Мур
+const boyer = require('./boyer moore.js') // Метод: Бойер-Мур
 const auto = require('./auto.js'); // Метод: Автомат
 // Методы
 
@@ -93,7 +93,7 @@ switch(method.toLowerCase()) {
     }
 
     default: {
-        console.log(`Command: core.js (-c | -n N | -t | -a) [b | h1 | h2 | h3 | auto] string.txt substring.txt`)
+        console.log(`Command: core.js (-c | -n N | -t | -a) [b | h1 | h2 | h3 | auto | bm] string.txt substring.txt`)
         break;
     }
 }
