@@ -25,7 +25,7 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
     let sumString = 0; // Обнуление суммы строки
     for(let j = 0; j < substring.length; j++) {
         // Сумма ASCII у строки
-        sumString += string[i + j].charCodeAt();
+        sumString += string[j].charCodeAt();
     }
 
     for(let i = 0; i < string.length - substring.length + 1; i++) {
@@ -54,6 +54,8 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
     } else console.log(arrayIndex); // Если не был найден ключ не вывод определённого кол-ва элементов
 }
 
+console.log('h1');
+
 // Hashes: Сумма квадратов кодов
 module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     let time = performance.now(); // Начало работы алгоритма
@@ -72,8 +74,9 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     let sumString = 0; // Обнуление суммы строки
     for(let j = 0; j < substring.length; j++) {
         // Сумма ASCII у строки
-        sumString += string[i + j].charCodeAt() ** 2;
+        sumString += string[j].charCodeAt() ** 2;
     }
+
     for(let i = 0; i < string.length - substring.length + 1; i++) {
 
         if (sumString != sumSubstring) continue // Если сумма не равна
