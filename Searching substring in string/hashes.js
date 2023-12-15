@@ -32,7 +32,7 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
         sumString += string[i].charCodeAt();
     }
 
-    for(let i = 0; i < string.length - substring.length; i++) {
+    for(let i = 0; i < string.length - substring.length + 1; i++) {
 
         if (sumString == sumSubstring) {
             counterCollision++;
@@ -85,7 +85,7 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
         sumString += string[i].charCodeAt() ** 2;
     }
 
-    for(let i = 0; i < string.length - substring.length - 1; i++) {
+    for(let i = 0; i < string.length - substring.length + 1; i++) {
 
         if (sumString == sumSubstring) {
             counter = 0;
@@ -135,15 +135,15 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
         sumSubstring += substring[i].charCodeAt() * (2**(substring.length - i - 1));
 
         // Сумма ASCII у строки
-        sumString += string[i].charCodeAt() * (2**(string.length - i - 1));
+        sumString += string[i].charCodeAt() * (2**(substring.length - i - 1));
     }
 
-    for(let i = 0; i < string.length - substring.length; i++) {
+    for(let i = 0; i < string.length - substring.length + 1; i++) {
         if (sumString == sumSubstring) {
             counter = 0;
             counterCollision++;
             for(let j = 0; j < substring.length; j++) {
-                if (string[i + j] != substring[j]) break; // Есил символ не совпал
+                if (string[i + j] != substring[j]) break; // Если символ не совпал
                 counter++;
             }
 
@@ -151,6 +151,7 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
         }
         
         if (arrayIndex.length == numberOfIndexs) break;
+        if (!string[i + substring.length]) continue; // Если последний символ не найден, то ничего не делаем
         sumString = (sumString - string[i].charCodeAt() * (2**(substring.length - 1))) * 2 + string[i + substring.length].charCodeAt();
     }
 
