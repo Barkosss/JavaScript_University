@@ -1,7 +1,5 @@
 const fs = require('fs');
-// 0 - низкий приоритет (+ | -)
-// 1 - средний приоритет (* | /)
-// 2 - высокий приоритет (^)
+
 const priority = {
     '(': 0,
     ')': 0,
@@ -20,8 +18,7 @@ function replaceAll(str, find, replace) {
     return str.replace(new RegExp(find, 'g'), replace);
 }
 
-// Справочник
-if (!threeArgv || threeArgv.toLowerCase() == 'help') {
+function help() {
     console.log('------ HELP ------');
     console.log('#1 Usage example:');
     console.log('- You can specify an expression in the arguments in the terminal. Example: node core.js (2 + 5) * 10');
@@ -31,6 +28,10 @@ if (!threeArgv || threeArgv.toLowerCase() == 'help') {
     console.log('------ HELP ------');
     return;
 }
+
+// Справочник
+if (!threeArgv || threeArgv.toLowerCase() == 'help') help();
+
 // Если выражение указано в файле
 else if (threeArgv.endsWith('.txt')) {
     let fileName = threeArgv;
@@ -42,7 +43,9 @@ else if (threeArgv.endsWith('.txt')) {
         .replaceAll('*', ' * ')
         .replaceAll('/', ' / ')
         .replaceAll('^', ' ^ ')
-        .replaceAll('d', ' d ').split(' ');
+        .replaceAll('d', ' d ').toLowerCase();
+    if (!expression.length) return help();
+    expression = expression.split(' ');
 
 // Если выражение указано в терминале
 } else {
@@ -54,7 +57,7 @@ else if (threeArgv.endsWith('.txt')) {
         .replaceAll('*', ' * ')
         .replaceAll('/', ' / ')
         .replaceAll('^', ' ^ ')
-        .replaceAll('d', ' d ').split(' ');
+        .replaceAll('d', ' d ').toLowerCase().split(' ');
 }
 const stack = [];
 let heap = [];
@@ -171,6 +174,8 @@ while(stack.length) {
     stack.pop();
 }
 
+console.log(':', heap.join(' '));
+
 let index = 0;
 while(heap.length != 1) {
 
@@ -187,7 +192,6 @@ while(heap.length != 1) {
             case '^': {}
             case 'd': { result = leftNumber ** rightNumber; break; }
         }
-
         heap[index] = result;
         heap = heap.slice(0, index + 1).concat(heap.slice(index + 3, heap.length));
         index = 0;
