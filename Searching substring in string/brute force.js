@@ -36,9 +36,5 @@ module.exports.run = async(keys, stringFile, substringFile) => {
 
     time = performance.now() - time; // Конец работы алгоритма
     if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
-    if (numberOfIndexs) {
-        console.log(`[0, ${numberOfIndexs}]:`, arrayIndex.slice(0, numberOfIndexs));
-    } else {
-        console.log(arrayIndex);
-    }
+    console.log(arrayIndex);
 }

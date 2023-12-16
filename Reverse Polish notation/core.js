@@ -1,5 +1,24 @@
 const fs = require('fs');
 
+
+/* Пример:
+5 * 2                           --->       5 2 *                       ---> (10)
+(5 + 2) * 5                     --->       5 2 + 5 *                   ---> (35)
+(5 + 2 - 1) * (5 + 2)           --->       5 2 + 1 - 5 2 + *           ---> (42)
+(2 + 5 * 2) * 5 + 2             --->       2 5 2 * + 5 * 2 +           ---> (62)
+(5 * 3 + ( -5 * 5 ) * 7 + 5)    --->       5 3 * -5 5 * 7 * + 5 +     ---> (−155)
+*/
+
+/* Тесты
+
+1. ( 6 + 10 - 4 ) / ( 1 + 1 * 2 ) + 1 = 5
+2. ( ( 7 - 6.35 ) / 6.5 + 9.9 ) / ( ( 1.2 / 36 + 1.2 / 0.25 - 21 / 16 ) / ( 169 / 24 ) ) = 20
+
+*/
+
+let expression, heap = [], stack = [];
+const threeArgv = process.argv[2].toLowerCase();
+
 const priority = {
     '(': 0,
     ')': 0,
@@ -10,15 +29,13 @@ const priority = {
     'd': 3,
     '^': 3
 };
-var expression;
-let threeArgv = process.argv[2];
 
-// Функция для замены всех входящих элементов в строке
-function replaceAll(str, find, replace) {
+function replaceAll(str, find, replace) { 
     return str.replace(new RegExp(find, 'g'), replace);
 }
 
-function help() {
+// Вызов справочника
+if (!threeArgv || [''].indexOf(threeArgv) != -1) {
     console.log('------ HELP ------');
     console.log('#1 Usage example:');
     console.log('- You can specify an expression in the arguments in the terminal. Example: node core.js (2 + 5) * 10');
@@ -29,146 +46,102 @@ function help() {
     return;
 }
 
-// Справочник
-if (!threeArgv || threeArgv.toLowerCase() == 'help') help();
-
-// Если выражение указано в файле
+// Если третий аргумент -> Файл
 else if (threeArgv.endsWith('.txt')) {
-    let fileName = threeArgv;
-    expression = fs.readFileSync(fileName, 'utf8').trim()
-        .replaceAll('(', ' ( ')
-        .replaceAll(')', ' ) ')
-        .replaceAll('+', ' + ')
-        .replaceAll('-', ' - ')
-        .replaceAll('*', ' * ')
-        .replaceAll('/', ' / ')
-        .replaceAll('^', ' ^ ')
-        .replaceAll('d', ' d ').toLowerCase();
-    if (!expression.length) return help();
-    expression = expression.split(' ');
-
-// Если выражение указано в терминале
-} else {
-    expression = process.argv.slice(2)[0]
-        .replaceAll('(', ' ( ')
-        .replaceAll(')', ' ) ')
-        .replaceAll('+', ' + ')
-        .replaceAll('-', ' - ')
-        .replaceAll('*', ' * ')
-        .replaceAll('/', ' / ')
-        .replaceAll('^', ' ^ ')
-        .replaceAll('d', ' d ').toLowerCase().split(' ');
+    const contentFile = fs.readFileSync(threeArgv, 'utf8').toLowerCase();
+    if (!contentFile.length) return console.log('The file is empty');
+    expression = contentFile.replaceAll('(', ' ( ')
+                            .replaceAll(')', ' ) ')
+                            .replaceAll('+', ' + ')
+                            .replaceAll('-', ' - ')
+                            .replaceAll('*', ' * ')
+                            .replaceAll('/', ' / ')
+                            .replaceAll('^', ' ^ ')
+                            .replaceAll('d', ' d ')
+                            .trim().split(' ');
 }
-const stack = [];
-let heap = [];
 
-/* Пример:
-5 * 2                    --->       5 2 *               ---> (10)
-(5 + 2) * 5              --->       5 2 + 5 *           ---> (35)
-(5 + 2 - 1) * (5 + 2)    --->       5 2 + 1 - 5 2 + *   ---> (42)
-(2 + 5 * 2) * 5 + 2      --->       2 5 2 * + 5 * 2 +   ---> (62)
-*/
+// Если третий аргумент -> Выражение
+else {
+    expression = threeArgv.replaceAll('(', ' ( ')
+                          .replaceAll(')', ' ) ')
+                          .replaceAll('+', ' + ')
+                          .replaceAll('-', ' - ')
+                          .replaceAll('*', ' * ')
+                          .replaceAll('/', ' / ')
+                          .replaceAll('^', ' ^ ')
+                          .replaceAll('d', ' d ')
+                          .trim().split(' ');
+}
 
-/* Тесты
+expression = expression.filter(char => char.length);
+if (expression.filter(chr => chr == '(').length != expression.filter(chr => chr == ')').length) return console.log('(0) The expression is incorrect');
 
-1. ( 8 + 2 * 5 ) / ( 1 + 3 * 2 - 4 ) - 5 + ( 9 / ( 1 + 2 ) + 1 ) * 3 = 13
-2. ( 6 + 10 - 4 ) / ( 1 + 1 * 2 ) + 1 = 5
-3. ( ( 7 - 6.35 ) / 6.5 + 9.9 ) / ( ( 1.2 / 36 + 1.2 / 0.25 - 21 / 16 ) / ( 169 / 24 ) ) = 20
-
-*/
-
-// Формарование стэка и выходных данных
 for(let index = 0; index < expression.length; index++) {
 
     switch(expression[index]) {
 
-        case '(': { // Открытие скобки
+        case '(': { // Встретилась открывающая скобка
+
+            if (expression[index + 1] in priority && expression[index + 1] != '-' && expression[index + 1] != '(') return console.log('(1) The expression is incorrect');
+
             stack.push('('); // Добавляем в стэк скобку
             break;
         }
+        case ')': { // Встретилась закрывающая скобка
 
-        case ')': { // Закрытие скобки
+            // Если кол-во открывающихся скобок в стеке равно нулю
+            if (!stack.filter(chr => chr == '(').length) return console.log('(2) The expression is incorrect');
+
+            if ((expression[index - 1] in priority && expression[index - 1] != '-') && expression[index - 1] != ')') return console.log('(3) The expression is incorrect');
+
             while(stack.length && stack[stack.length - 1] != '(') {
-                heap.push(stack[stack.length - 1]); // Добавляем последний элемент из массива stack в массив heap
-                stack.pop(); // Удаляем последний элемент из массива
+                heap.push(stack[stack.length - 1]); // Последний элемент стэка переносим в heap
+                stack.pop(); // Удаляем последний элемент из стэка
             }
-            stack.pop(); // Удаляем '(' из массива stack
+            stack.pop(); // Удаляем '(' из стэка
             break;
         }
 
-        case '+': { // Сложение
+        case '-': { // Встретился знак -
+            // Если встретилось отрицательное число
+            if (index == 0 || (isNaN(Number(expression[index - 1])) && !isNaN(Number(expression[index + 1])))) {
+                heap.push(-1 * expression[index + 1]);
+                index++;
+                break;
+            }
+        }
+        case '+': {} // Встретился знак +
+        case '*': {} // Встретился знак *
+        case '/': { // Встретился знак /
             // Если попалась операция, которая имеет выше приоритетом, чем последняя операци в стэке
             if (!stack.length || priority[expression[index]] > priority[stack[stack.length - 1]]) stack.push(expression[index]);
             // Если попалась операция, которая имеет не выше приоритет
             else {
-                while(stack.length && stack[stack.length - 1] != '(') {
-                    heap.push(stack[stack.length - 1]);
-                    stack.pop();
+                while(stack.length && stack[stack.length - 1] != '(' && priority[expression[index]] <= priority[stack[stack.length - 1]]) {
+                    heap.push(stack[stack.length - 1]); // Последний элемент стэка переносим в heap
+                    stack.pop(); // Удаляем последний элемент из стэка
                 }
-                stack.push(expression[index]);
+                stack.push(expression[index]); // Добавляем текущую операцию в стэк
             }
             break;
         }
 
-        case '-': { // Вычитание
-            // Если попалась операция, которая имеет выше приоритетом, чем последняя операци в стэке
-            if (!stack.length || priority[expression[index]] > priority[stack[stack.length - 1]]) stack.push(expression[index]);
-            // Если попалась операция, которая имеет не выше приоритет
-            else {
-                while(stack.length && stack[stack.length - 1] != '(') {
-                    heap.push(stack[stack.length - 1]);
-                    stack.pop();
-                }
-                stack.push(expression[index]);
-            }
-            break;
-        }
-
-        case '*': { // Умножение
-            // Если попалась операция, которая имеет выше приоритетом, чем последняя операци в стэке
-            if (!stack.length || priority[expression[index]] > priority[stack[stack.length - 1]]) stack.push(expression[index]);
-            // Если попалась операция, которая имеет не выше приоритет
-            else {
-                while(stack.length && stack[stack.length - 1] != '(') {
-                    heap.push(stack[stack.length - 1]);
-                    stack.pop();
-                }
-                stack.push(expression[index]);
-            }
-            break;
-        }
-
-        case '/': { // Деление
-            // Если попалась операция, которая имеет выше приоритетом, чем последняя операци в стэке
-            if (!stack.length || priority[expression[index]] > priority[stack[stack.length - 1]]) stack.push(expression[index]);
-            // Если попалась операция, которая имеет не выше приоритет
-            else {
-                while(stack.length && stack[stack.length - 1] != '(') {
-                    heap.push(stack[stack.length - 1]);
-                    stack.pop();
-                }
-                stack.push(expression[index]);
-            }
-            break;
-        }
-
-        case 'd': {}
-        case '^': { // Степень
+        case '^': {} // Встретился знак ^
+        case 'd': { // Встретился знак d (Аналог ^)
             stack.push(expression[index]);
             break;
         }
 
-        default: { // Если не операция
-            if (!expression[index].length) break;
-            let number = parseFloat(expression[index]);
-            if (isNaN(number)) return console.log(`Unknown operation or multiplier: ${expression[index]}`);
+        default: { // Встретилась не операция (Сторонний символ или число)
+            let number = Number(expression[index]);
+            if (isNaN(number)) return console.log('(4) The expression is incorrect');
             heap.push(number);
             break;
         }
     }
 }
 
-// Остатки элементов в stack записываем в heap
 while(stack.length) {
     heap.push(stack[stack.length - 1]);
     stack.pop();
@@ -176,21 +149,19 @@ while(stack.length) {
 
 console.log(':', heap.join(' '));
 
-let index = 0;
+let index = 0; let result;
+let leftNumber, rightNumber;
 while(heap.length != 1) {
-
-    // Если первый и второй аргумент являются числами, а третий - операцией
-    let result;
-    if (!isNaN(Number(heap[index])) && !isNaN(Number(heap[index + 1])) && (heap[index + 2] in priority)) {
-        let leftNumber = heap[index]; let rightNumber = heap[index + 1];
+    leftNumber = heap[index]; rightNumber = heap[index + 1];
+    if (!isNaN(Number(leftNumber)) && !isNaN(Number(rightNumber)) && (heap[index + 2] in priority)) {
         result = 0;
         switch(heap[index + 2]) {
-            case '+': { result = leftNumber + rightNumber; break; }
-            case '-': { result = leftNumber - rightNumber; break; }
-            case '*': { result = leftNumber * rightNumber; break; }
-            case '/': { result = leftNumber / rightNumber; break; }
+            case '+': { result = leftNumber + rightNumber; break; };
+            case '-': { result = leftNumber - rightNumber; break; };
+            case '*': { result = leftNumber * rightNumber; break; };
+            case '/': { result = leftNumber / rightNumber; break; };
             case '^': {}
-            case 'd': { result = leftNumber ** rightNumber; break; }
+            case 'd': { result = leftNumber ** rightNumber; break; };
         }
         heap[index] = result;
         heap = heap.slice(0, index + 1).concat(heap.slice(index + 3, heap.length));
@@ -200,5 +171,4 @@ while(heap.length != 1) {
     }
 }
 
-// Вывод ответа
 console.log('Answer:', heap[0]);

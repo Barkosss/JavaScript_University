@@ -7,6 +7,9 @@ const fs = require('fs');
 */
 
 
+// Переделать функции
+// Избавиться от дублирования кода
+
 // Hashes: Сумма кодов
 module.exports.sum = async(keys, stringFile, substringFile) => {
     let numberOfIndexs;
@@ -35,7 +38,6 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
     for(let i = 0; i < string.length - substring.length + 1; i++) {
 
         if (sumString == sumSubstring) {
-            counterCollision++;
             counter = 0;
             for(let j = 0; j < substring.length; j++) {
                 if (string[i + j] != substring[j]) break; // Если не совпал символ
@@ -43,6 +45,7 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
             }
 
             if (counter == substring.length) arrayIndex.push(i);
+            else counterCollision++;
         }
 
         if (arrayIndex.length >= numberOfIndexs) break;
@@ -52,11 +55,7 @@ module.exports.sum = async(keys, stringFile, substringFile) => {
     time = performance.now() - time; // Конец работы алгоритма
     if (keys.indexOf('-c') != -1) console.log(`Collision: ${counterCollision}`);
     if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
-    if (numberOfIndexs) {
-        console.log(`[0, ${numberOfIndexs}]:`, arrayIndex.slice(0, numberOfIndexs));
-    } else {
-        console.log(arrayIndex);
-    }
+    console.log(arrayIndex);
 }
 
 
@@ -89,13 +88,13 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
 
         if (sumString == sumSubstring) {
             counter = 0;
-            counterCollision++;
             for(let j = 0; j < substring.length; j++) {
                 if (string[i + j] != substring[j]) break; // Если символ не совпал
                 counter++;
             }
 
-            if (counter == substring.length) arrayIndex.push(i);            
+            if (counter == substring.length) arrayIndex.push(i);  
+            else counterCollision++;          
         }
 
         if (arrayIndex.length >= numberOfIndexs) break;
@@ -105,11 +104,7 @@ module.exports.sumSquare = async(keys, stringFile, substringFile) => {
     time = performance.now() - time; // Конец работы алгоритма
     if (keys.indexOf('-c') != -1) console.log(`Collision: ${counterCollision}`);
     if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
-    if (numberOfIndexs) {
-        console.log(`[0, ${numberOfIndexs}]:`, arrayIndex.slice(0, numberOfIndexs));
-    } else {
-        console.log(arrayIndex);
-    }
+    console.log(arrayIndex);
 }
 
 
@@ -141,16 +136,16 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     for(let i = 0; i < string.length - substring.length + 1; i++) {
         if (sumString == sumSubstring) {
             counter = 0;
-            counterCollision++;
             for(let j = 0; j < substring.length; j++) {
                 if (string[i + j] != substring[j]) break; // Если символ не совпал
                 counter++;
             }
 
             if (counter == substring.length) arrayIndex.push(i);
+            else counterCollision++;
         }
         
-        if (arrayIndex.length == numberOfIndexs) break;
+        if (arrayIndex.length >= numberOfIndexs) break;
         if (!string[i + substring.length]) continue; // Если последний символ не найден, то ничего не делаем
         sumString = (sumString - string[i].charCodeAt() * (2**(substring.length - 1))) * 2 + string[i + substring.length].charCodeAt();
     }
@@ -159,9 +154,5 @@ module.exports.rabinaKarp = async(keys, stringFile, substringFile) => {
     time = performance.now() - time; // Конец работы алгоритма
     if (keys.indexOf('-c') != -1) console.log(`Collision: ${counterCollision}`);
     if (keys.indexOf('-t') != -1) console.log(`Time: ${time.toFixed(4)}ms`); // Если был найден ключ на вывод времени работы кода
-    if (numberOfIndexs) {
-        console.log(`[0, ${numberOfIndexs}]:`, arrayIndex.slice(0, numberOfIndexs));
-    } else {
-        console.log(arrayIndex);
-    }
+    console.log(arrayIndex);
 }
