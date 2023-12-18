@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Game "Life"</title>
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+		<script type="text/javascript" src="life.js"></script>
+		<script type="text/javascript" src="world.js"></script>
+		<link rel="stylesheet" type="text/css" href="lifestyles.css">
+	</head>	
+	<body>
+		<div class="game">
+			<div class="buttons">
+				<input type="button" value="next" onclick="next();">
+				<input type="button" value="start" onclick="go();">
+				<input type="button" value="stop" onclick="stop();">
+				<input type="button" value="random" onclick="random();">
+			</div>
+			<div class="size">
+				<input type="text" id="height" value=40>
+				<input type="text" id="width" value=40>
+				<input type="button" class="wide" value="new world" onclick="newWorld();">
+			</div>
+			<table id="world">
+			</table>
+		</div>
+	</body>
+</html>

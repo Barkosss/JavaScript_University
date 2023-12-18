@@ -72,7 +72,7 @@ switch(action) {
         let lang = process.argv[process.argv.length - 1].toLowerCase();
 
         // Если сдвиг не число
-        if (isNaN(parseInt(shift))) return console.log('The shift should be like a number');
+        if (isNaN(parseInt(shift)) || parseInt(shift) < 0) return console.log('The shift must be similar to a number and at least 0');
 
         // Если алфавит не ru и не en
         if (['ru', 'en'].indexOf(lang) == -1) return console.log('There are only ru and en alphovites');
