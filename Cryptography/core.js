@@ -14,7 +14,7 @@ function encode(content, shift, lang) {
     let encodeContent = '';
     for(let index = 0; index < content.length; index++) {
         // Если стретился не буква
-        if (' ,.?!'.includes(content[index])) {
+        if (' ,.?!–-»()…'.includes(content[index]) || !isNaN(Number(content[index]))) {
             encodeContent += content[index];
             continue;
         }
@@ -23,6 +23,7 @@ function encode(content, shift, lang) {
 
         // Если символ не соответствует алфовиту
         if (language[lang].indexOf(char) == -1){
+            console.log(char);
             console.log('Got a character that doesn\'t match the alphabet.');
             return -1;
         }
@@ -41,7 +42,7 @@ function decode(content, lang) {
         let decodeContent = '';
         for(let index = 0; index < content.length; index++) {
             // Если стретился не буква
-            if (' ,.?!'.includes(content[index])) {
+            if (' ,.?!–-»()…'.includes(content[index]) || !isNaN(Number(content[index]))) {
                 decodeContent += content[index];
                 continue;
             }
