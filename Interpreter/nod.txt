@@ -1,24 +1,55 @@
 .data
-maxDiv 1
-ecx 1
-nol 0
+#11 1
 
 .code
-input n1
-input n2
-max ebx n1 n2
-min emx n1 n2
+input #1
+input #2
+
+add #4 #1 #2
+// Если сумма равна второму числу -> Вылет
+cmp #4 #2
+je :zero
+// Если сумма равна первому числу -> Вылет
+cmp #4 #1
+je :zero
+
+cmp #1 0
+jge :check
+mul #1 -1
+
+:check
+cmp #2 0
+jge :run
+mul #2 -1
+
+:run
+cmp #1 #2
+jge :start_chooseNumber
+jmp :for_start
+
+:start_chooseNumber
+mov #3 #1
+mov #1 #2
+mov #2 #3
+
 :for_start
-    mov eax ebx
-    max ebx eax emx
-    min emx eax emx
-    diff ecx ebx emx
-    cmp ecx 0
+    cmp #1 #2
+    jg :start_chooseNumber
+    diff #11 #2 #1
+    cmp #11 0
     je :for_end
-    abs ecx
-    mov ebx ecx
+    cmp #11 0
+    jb :abs
+    :absAccepted
+    mov #2 #11
     jmp :for_start
 :for_end
 
-output ebx
+output Answer:
+output #2
+:zero
 end
+
+:abs
+mul #11 -1
+jmp :absAccepted

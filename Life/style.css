@@ -2,34 +2,7 @@ body {
     background-color: #111112;
 }
 
-input[type="button"] {
-    outline: none;
-    border: none;
-    padding: 25px 80px;
-    background-color: #ffae19;
-    border-radius: 10px;
-    margin: 0 auto;
-    display: block;
-    position: relative;
-    font-size: 16px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    box-shadow: 0 6px #ffa500;
-    color: white;
-    right: 150px;
-    width: 260px;
-    height: 60px;
-}
 
-input:hover {
-    box-shadow: 0 4px #ffa500;
-    top: 2px;
-}
-  
-input:active {
-    box-shadow: none;
-    top: 6px;
-}
 
 #ButtonCreateRandomField img {
     display: block;

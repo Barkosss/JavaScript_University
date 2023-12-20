@@ -1,299 +1,277 @@
 const fs = require('fs');
 const prompt = require('prompt-sync')();
-
-/*
---- Синтаксис языка --
-
-
-*/
-
 const inputFile = process.argv[2];
+if (!fs.existsSync(inputFile)) return console.log(`File ${inputFile} is not denied!\nFormat: [input file]`);
 const content = fs.readFileSync(inputFile, 'utf-8');
-var lines = content.split('\n'); // Делаю массив
-for (let i in lines) if (lines[i].length > 1) lines[i] = lines[i].trim(); // Убираю лишние пробелы в строке (В начале и в конце)
-const map = { '.code': [], '.data': { 'eax': 0, 'ebx': 0, 'ecx': 0, 'edx': 0, 'esp': 0, 'ebp': 0, 'esi': 0, 'edi': 0, 'eip': 0, 'eflags': 0 } };
-var indexCode = 0;
-var section = lines[0].trim();
+var split = content.split('\n'); var data = [];
+for (let i in split) if (split[i] != '\r' && split[i].length > 0) data.push(split[i].trim());
+const lendata = data.length;
+var indexCode = 0; // Номер строки
+var section = data[0].trim(); // Секция кода.
 
-// Пробегаемся по массиву
-(async () => {
-    while (lines[indexCode] != 'end') {
-        if (!lines[indexCode].trim() || lines[indexCode].trim().startsWith('//')) { indexCode++; continue; };
-        var line = lines[indexCode].trim();
-        if (line[0] == ':') { indexCode++; continue; }
-        if (['.data', '.code'].indexOf(line) != -1) { section = line; indexCode++; continue; }
-        //console.log(lines, line.startsWith(':start'));
-        /*
-        if (line.startsWith(':start')) { // Реагирование на метки
-            const command = line.split('_').slice(1);
-            map[line] = indexCode;
-            map[':end_' + command] = lines.indexOf(':end_' + command);
-            indexCode++;
-            //continue;
-        }*/
-        switch (section) {
-            case '.data': {
-                var [variable, value] = line.split(' ');
-                map['.data'][variable] = ((value) ? (parseInt(value)) : (0));
-                indexCode++;
-                break;
-            }
+while(data[indexCode] != 'end') {
+    if (!data[indexCode].trim() || data[indexCode].trim().startsWith('//')) { indexCode++; continue; };
+    var line = data[indexCode].trim();
+    if (line[0] == ':') { indexCode++; continue };
+    if (['.data', '.code'].indexOf(line) != -1) { section = line; indexCode++; continue; }
+    //console.log(section);
+    switch(section) {
 
-            case '.code': {
-                const command = line.split(' ')[0];
-                //console.log(map, 'command:', command);
-                switch (command) {
-
-                    case 'mov': { // Перемещение значений
-                        const [register, value] = line.split(' ').slice(1) // register - регистр, value - значение
-                        if (isNaN(value)) {
-                            if (value in map['.data']) {
-                                map['.data'][register] = map['.data'][value];
-                            } else {
-                                console.log(`Variable ${value} is not defined.`);
-                                return;
-                            }
-                        } else {
-                            map['.data'][register] = parseInt(value);
-                        }
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'and': {
-                        var [oneVariable, twoVariable] = line.split(' ').slice(1);
-                        map['.data'][oneVariable] = (map['.data'][oneVariable] * map['.data'][twoVariable]);
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'max': { // Максимальное значение
-                        let variable = line.split(' ')[1];
-                        let variables = [];
-                        line.split(' ').slice(2).filter((elem) => {
-                            if (isNaN(elem)) {
-                                if (elem in map['.data']) {
-                                    variables.push(map['.data'][elem]);
-                                } else {
-                                    console.log(`Variable ${value} is not defined.`);
-                                    return;
-                                }
-                            } else {
-                                variables.push(parseInt(elem));
-                            }
-                        });
-                        let maxValue = Math.max.apply(null, variables);
-                        map['.data'][variable] = maxValue;
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'min': { // Минимальное значение
-                        let variable = line.split(' ')[1];
-                        let variables = [];
-                        line.split(' ').slice(2).filter((elem) => {
-                            if (isNaN(elem)) {
-                                if (elem in map['.data']) {
-                                    variables.push(map['.data'][elem]);
-                                } else {
-                                    console.log(`Variable ${value} is not defined.`);
-                                    return;
-                                }
-                            } else {
-                                variables.push(parseInt(elem));
-                            }
-                        });
-                        let minValue = Math.min.apply(null, variables);
-                        map['.data'][variable] = minValue;
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'abs': { // Модуль числа
-                        let variable = line.split(' ')[1];
-                        map['.data'][variable] = Math.abs(map['.data'][variable]);
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'diff': {
-                        let variable = line.split(' ')[1];
-                        let oneVariable = line.split(' ')[2];
-                        let twoVariable = line.split(' ')[3];
-                        if (isNaN(oneVariable)) {
-                            if (oneVariable in map['.data']) {
-                                oneVariable = map['.data'][oneVariable];
-                            } else {
-                                console.log(`Variable ${oneVariable} is not defined.`);
-                                return;
-                            }
-                        } else {
-                            oneVariable = parseInt(oneVariable);
-                        }
-                        if (isNaN(twoVariable)) {
-                            if (twoVariable in map['.data']) {
-                                twoVariable = map['.data'][twoVariable];
-                            } else {
-                                console.log(`Variable ${twoVariable} is not defined.`);
-                                return;
-                            }
-                        } else {
-                            twoVariable = parseInt(twoVariable);
-                        }
-                        map['.data'][variable] = oneVariable - twoVariable;
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'input': { // Ввод значения с консоли
-                        let variable = line.split(' ')[1];
-                        let input = parseInt(prompt(': '));
-                        map['.data'][variable] = input;
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'output': { // Вывести результат
-                        const variable = line.split(' ')[1];
-                        let output;
-                        if (map['.data'][variable]) { // Если указан регистр
-                            output = map['.data'][variable];
-                        }
-                        else if (map['.data'][variable]) { // Если указана инициализированная переменная
-                            output = map['data'][variable];
-                        } else { // Если указана неинициализированная переменная
-                            output = undefined;
-                        }
-
-                        console.log(output); // Вывести значение в консоль
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'mod': { // Деление с остатком
-                        const variable = line.split(' ')[1]; // Переменная, куда надо сохранить результат. Первое слагаемое
-                        const summand = line.split(' ')[2]; // Второе слагаемое.
-                        //console.log('After:', map['.data'][variable], map['.data'][summand], (map['.data'][variable] % map['.data'][summand]))
-                        if (isNaN(summand)) {
-                            if (summand in map['.data']) {
-                                map['.data'][variable] = (map['.data'][variable] % map['.data'][summand]);
-                            } else {
-                                console.log(`Variable ${summand} is not defined.`);
-                                return;
-                            }
-                        } else {
-                            map['.data'][variable] = map['.data'][variable] % parseInt(summand);
-                        }
-                        //console.log('Before:', map['.data'][variable], map['.data'][summand], (map['.data'][variable] % map['.data'][summand]))
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'add': { // Сложение
-                        const variable = line.split(' ')[1]; // Переменная, куда надо сохранить результат. Первое слагаемое
-                        const summand = line.split(' ')[2]; // Второе слагаемое.
-
-                        if (isNaN(summand)) {
-                            if (summand in map['.data']) {
-                                map['.data'][variable] += parseInt(map['.data'][summand]);
-                            } else {
-                                console.log(`Variable ${summand} is not defined.`);
-                                return;
-                            }
-                        } else {
-                            map['.data'][variable] += parseInt(summand);
-                        }
-
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'cmp': { // Сравнение (Перепрыгнуть)
-                        indexCode++;
-                        break;
-                    }
-
-                    case 'je': { // Переход, если первый аргумент РАВЕН второму аргументу
-                        let prevLine = lines[indexCode - 1].trim();
-                        let oneVariable = prevLine.split(' ')[1];
-                        let twoVariable = prevLine.split(' ')[2];
-                        if (isNaN(oneVariable)) {
-                            if (oneVariable in map['.data']) {
-                                oneVariable = parseInt(map['.data'][oneVariable]);
-                            } else {
-                                console.log(`Variable ${oneVariable} is not defined.`);
-                                return;
-                            }
-                        } else {
-                            oneVariable = parseInt(oneVariable);
-                        }
-                        if (isNaN(twoVariable)) {
-                            if (twoVariable in map['.data']) {
-                                twoVariable = parseInt(map['.data'][twoVariable]);
-                            } else {
-                                console.log(`Variable ${twoVariable} is not defined.`);
-                                return;
-                            }
-                        } else {
-                            twoVariable = parseInt(twoVariable);
-                        }
-
-                        if (oneVariable == twoVariable) {
-                            const point = line.split(' ')[1];
-                            indexCode = lines.indexOf(point) + 1;
-                        } else {
-                            indexCode++;
-                        }
-                        break;
-                    }
-
-                    case 'jge': { // Переход, если больше или равно (Чекать прошлую строку)
-                        let prevLine = lines[indexCode - 1].trim();
-                        let oneVariable = prevLine.split(' ')[1];
-                        let twoVariable = prevLine.split(' ')[2];
-                        if (map['.data'][oneVariable] >= map['.data'][twoVariable]) {
-                            const point = line.split(' ')[1];
-                            indexCode = lines.indexOf(point) + 1;
-                        } else {
-                            indexCode++;
-                        }
-                        break;
-                    }
-
-                    case 'jne': { // Переход, если не равно
-                        let prevLine = lines[indexCode - 1].trim();
-                        let oneVariable = prevLine.split(' ')[1];
-                        let twoVariable = prevLine.split(' ')[2];
-
-                        if (map['.data'][oneVariable] != map['.data'][twoVariable]) {
-                            const point = line.split(' ')[1];
-                            indexCode = lines.indexOf(point) + 1;
-                        } else {
-                            indexCode++;
-                        }
-                        break;
-                    }
-
-                    case 'jmp': { // Переход
-                        const point = line.split(' ')[1];
-                        indexCode = lines.indexOf(point) + 1;
-                        break;
-                    }
-                    
-                    default: {
-                        console.log(`Command ${command} is not defined.`);
-                        return;
-                    }
-                }
-                break;
-            }
-
-            default: {
-                console.log(`Section ${section} is not defined.`);
+        case '.data': { // Секция кода - Данные
+            let [cell, arg] = line.split(' ');
+            if (cell.startsWith('#')) { // Если начинается на # - Ячейка памяти
+                cell = parseInt(cell.slice(1)); // Убираем '#' из номера ячейки памяти
+                if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
+                data[lendata + cell + 1] = parseInt(arg); // Номер ячейка = Номер ячейки + длина кода + 1 (+1 делается для небольшого разделения между блоком кода и данных)
+            } else { // Не ячейка памяти - Ошибка
+                console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`)
                 return;
             }
+            indexCode++;
+            break;
+        }
+
+        case '.code': { // Секция кода - Кода
+            const command = line.split(' ')[0];
+            //console.log('command:', command);
+            switch(command) {
+
+                case 'mov': { // Перемещения значения
+                    let [cell, arg] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если первым аргументом указана ячейка
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
+                        if (isNaN(arg)) { // Если второй аргумент является ячейкой памяти
+                            arg = parseInt(arg.slice(1)) // Берём именно номер ячейки памяти
+                            if (arg < 0 || isNaN(arg)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
+                            data[lendata + cell + 1] = data[lendata + arg + 1]; // В ячейку с номером cell записываем значение из ячейки с номером arg;
+                        } else { // Если второй аргумент значение
+                            data[lendata + cell + 1] = parseInt(arg); // В ячейку с номером cell записываем значение arg;
+                        }
+                    } else { // Если первым аргументом указана не ячейка - Ошибка
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`)
+                        return;
+                    }
+                    indexCode++;
+                    break;
+                }
+                
+                case 'mul': { // Произведение
+                    let [cell, arg] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если первым аргументом указана ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        if (arg.startsWith('#')) { // Если вторым аргументом указана ячейка памяти
+                            arg = parseInt(arg.slice(1)); // Берём именно номер ячейки памяти
+                            if (arg < 0 || isNaN(arg)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                            data[lendata + cell + 1] = (data[lendata + cell + 1] ?? 0) * (data[lendata + arg + 1] ?? 0);
+                        } else if (!isNaN(Number(arg))) { // Если вторым аргументом указана число
+                            data[lendata + cell + 1] = (data[lendata + cell + 1] ?? 0) * arg;
+                        } else { // Если вторым указано не число и не ячейка памяти
+                            console.log(`The second argument must be a memory location or an integer. (line: ${indexCode + 1})`);
+                            return;
+                        }
+                    } else { // Если первым аргументом указана не ячейка памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    indexCode++;
+                    break;
+                }
+
+                case 'add': { // Сложение аргументов
+                    let [cell, ...argv] = line.split(' ').slice(1);
+                    if (argv.length < 2) return console.log(`Less then two arguments (line: ${indexCode + 1})`);
+                    if (cell.startsWith('#')) { // Если первым аргументом указана ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        let sum = 0; // Результат сложения - 0
+                        for (let elem of argv) { // вычисление
+                            if (isNaN(elem)) { // Если элемент массива является ячейкой памяти
+                                elem = parseInt(elem.slice(1)); // Берём именно номер ячейки памяти
+                                if (elem < 0 || isNaN(elem)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                                sum += parseInt(data[lendata + elem + 1]);
+                            } else { // Если элементь массива является значение
+                                sum += parseInt(elem);
+                            }
+                        }
+                        data[lendata + cell + 1] = sum; // Сохранение в ячейку памяти с номером cell результат сложения - sum
+                    } else { // Если первым аргументом указана не ячейка памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    indexCode++;
+                    break;
+                }
+
+                case 'diff': { // Разность аргументов
+                    let [cell, ...argv] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если первым аргументом указана ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        let diff = 0; // Результат вычитания - 0
+                        let firstArgv = argv[0];
+                        if (firstArgv.startsWith('#')) {
+                            number = parseInt(firstArgv.slice(1)); // Берём именно номер ячейки памяти
+                            if (number < 0 || isNaN(number)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                            diff = data[lendata + 1 + number];
+                        } else {
+                            diff = parseInt(firstArgv);
+                        }
+                        for (let elem of argv.slice(1)) { // вычисление
+                            if (isNaN(elem)) { // Если элемент массива является ячейкой памяти
+                                elem = parseInt(elem.slice(1)); // Берём именно номер ячейки памяти
+                                if (elem < 0 || isNaN(elem)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                                diff -= data[lendata + elem + 1];
+                            } else { // Если элементь массива является значение
+                                diff -= elem;
+                            }
+                        }
+                        data[lendata + cell + 1] = diff; // Сохранение в ячейку памяти с номером cell результат вычитания - diff
+                    } else { // Если первым аргументом указана не ячейка памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    indexCode++;
+                    break;
+                }
+
+                case 'input': { // Ввод с консоли
+                    let [cell] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        let input = prompt(': ');
+                        data[lendata + cell + 1] = input;
+                    } else { // Если аргумент не является ячейкой памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    indexCode++;
+                    break;
+                }
+
+                case 'output': { // Вывод на консоль
+                    let cell = line.split(' ')[1];
+                    if (cell.startsWith('#')) { // Если аргументом указана ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        console.log(data[lendata + cell + 1]);
+                    } else { // Если аргументом указана не ячейка памяти
+                        console.log(cell);
+                    }
+                    indexCode++;
+                    break;
+                }
+
+                case 'cmp': { // Команда для сравнения
+                    let [cell, arg1, arg2] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если первым аргументом указана ячейка
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
+                        
+                        if (arg1.startsWith('#')) { // Если первый аргумент - Ячейка памяти
+                            cell = parseInt(arg1.slice(1)); // Берём именно номер ячейки памяти
+                            if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
+                            arg1 = data[lendata + cell + 1];
+                        } else {
+                            arg1 = parseInt(arg1);
+                        }
+                        if (arg2.startsWith('#')) { // Если второй аргумент - Ячейка памяти
+                            cell = parseInt(arg2.slice(1)); // Берём именно номер ячейки памяти
+                            if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
+                            arg2 = data[lendata + cell + 1];
+                        } else {
+                            arg2 = parseInt(arg2);
+                        }
+    
+                        data[lendata + cell + 1] = 0;
+                        if (arg1 < arg2) { // Если первый аргумент меньше второго -> 1
+                            data[lendata + cell + 1] = 1;
+                        } else if (arg1 == arg2) { // Если первый аргумент равно второму -> 2
+                            data[lendata + cell + 1] = 2;
+                        } else if (arg1 > arg2) { // Если первый аргумент больше второму -> 3
+                            data[lendata + cell + 1] = 3;
+                        }
+                    } else { // Если первым аргументом указана не ячейка - Ошибка
+                        return console.log(`The first argument must be a memory cell. (${indexCode + 1})`);
+                    }
+                    indexCode++;
+                    break;
+                }
+
+                case 'jb': { // Переход указанная ячейка хранит 1 (первый аргумент меньше второго)
+                    let [cell, point] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        if (data[lendata + cell + 1] == 1) {
+                            if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
+                            else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
+                        } else { // Если аргументы равны
+                            indexCode++;
+                        }
+                    } else { // Если аргумент не является ячейкой памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    break;
+                }
+
+                case 'je': { // Переход указанная ячейка хранит 2 (первый аргумент равен второму)
+                    let [cell, point] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        if (data[lendata + cell + 1] == 2) {
+                            if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
+                            else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
+                        } else { // Если аргументы равны
+                            indexCode++;
+                        }
+                    } else { // Если аргумент не является ячейкой памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    break;
+                }
+
+                case 'ja': { // Переход указанная ячейка хранит 3 (первый аргумент больше второго)
+                    let [cell, point] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        if (data[lendata + cell + 1] == 3) {
+                            if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
+                            else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
+                        } else { // Если аргументы равны
+                            indexCode++;
+                        }
+                    } else { // Если аргумент не является ячейкой памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    break;
+                }
+
+                case 'jmp': { // Переход
+                    let point = line.split(' ')[1];
+                    if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
+                    else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
+                    break;
+                }
+
+                default: { // Ошибка
+                    console.log(`Command ${command} is not defined. (line: ${indexCode + 1})`);
+                    return;
+                }
+            }
+            break;
+        }
+
+        default: { // Ошибка
+            console.log(`Section ${section} is not defined. (line: ${indexCode + 1})`);
+            return;
         }
     }
-
-    console.log('The process is over');
-})();
+}

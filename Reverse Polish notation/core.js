@@ -17,7 +17,7 @@ const fs = require('fs');
 */
 
 let expression, heap = [], stack = [];
-const threeArgv = process.argv[2].toLowerCase();
+let threeArgv = process.argv[2];
 
 const priority = {
     '(': 0,
@@ -35,7 +35,7 @@ function replaceAll(str, find, replace) {
 }
 
 // Вызов справочника
-if (!threeArgv || [''].indexOf(threeArgv) != -1) {
+if (!threeArgv) {
     console.log('------ HELP ------');
     console.log('#1 Usage example:');
     console.log('- You can specify an expression in the arguments in the terminal. Example: node core.js (2 + 5) * 10');
@@ -47,7 +47,8 @@ if (!threeArgv || [''].indexOf(threeArgv) != -1) {
 }
 
 // Если третий аргумент -> Файл
-else if (threeArgv.endsWith('.txt')) {
+else if (threeArgv.endsWith('.txt')) {4
+    threeArgv = threeArgv.toLowerCase();
     const contentFile = fs.readFileSync(threeArgv, 'utf8').toLowerCase();
     if (!contentFile.length) return console.log('The file is empty');
     expression = contentFile.replaceAll('(', ' ( ')
@@ -58,11 +59,13 @@ else if (threeArgv.endsWith('.txt')) {
                             .replaceAll('/', ' / ')
                             .replaceAll('^', ' ^ ')
                             .replaceAll('d', ' d ')
+                            .replaceAll(',', '.')
                             .trim().split(' ');
 }
 
 // Если третий аргумент -> Выражение
 else {
+    threeArgv = threeArgv.toLowerCase();
     expression = threeArgv.replaceAll('(', ' ( ')
                           .replaceAll(')', ' ) ')
                           .replaceAll('+', ' + ')
@@ -71,11 +74,17 @@ else {
                           .replaceAll('/', ' / ')
                           .replaceAll('^', ' ^ ')
                           .replaceAll('d', ' d ')
+                          .replaceAll(',', '.')
                           .trim().split(' ');
 }
 
 expression = expression.filter(char => char.length);
 if (expression.filter(chr => chr == '(').length != expression.filter(chr => chr == ')').length) return console.log('(0) The expression is incorrect');
+// Проверка на корректное расположение операций
+for(let index = 0; index < expression.length - 1; index++) {
+    if ('-+*/d^'.includes(expression[index]) && '+*/d^'.includes(expression[index + 1]))
+        return console.log('(*) The expression is incorrect');
+}
 
 for(let index = 0; index < expression.length; index++) {
 
