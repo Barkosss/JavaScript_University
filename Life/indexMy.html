@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Game "Life"</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+    <div class="row">
+        <button type="button" id="ButtonCreateRandomField" onclick="CreateRandom()"><img src="image/Random.png"></button>
+        <input type="button" id="ButtonCreateField" onclick="Create()" value="Create">
+        <input type="button" id="ButtonRandomGeneration" onclick="Random()" value="Random">
+        <input type="button" id="buttonStartGeneration" onclick="Start()" value="Start">
+        <input type="button" id="buttonStopGeneration" onclick="Stop()" value="Stop">
+        <input type="button" id="buttonNextGeneration" onclick="Next()" value="Next">
+        <span id="errorInputMessage"></span>
+    </div>
+    <div class="fields" id="buttons"></div>
+</body>
+</html>

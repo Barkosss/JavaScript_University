@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-
 /* Пример:
 5 * 2                           --->       5 2 *                       ---> (10)
 (5 + 2) * 5                     --->       5 2 + 5 *                   ---> (35)
@@ -19,6 +18,15 @@ const fs = require('fs');
 let expression, heap = [], stack = [];
 let threeArgv = process.argv[2];
 
+// Функция для замены
+function ReplaceAll(str, finds, replaces) {
+    if (finds.length != replaces.length) return console.log('Number of substitutions less than found');
+    for(let i = 0; i < finds.length; i++) {
+        str = str.replaceAll(finds[i], replaces[i]);
+    }
+    return str.trim().split(' ');
+}
+
 const priority = {
     '(': 0,
     ')': 0,
@@ -29,10 +37,6 @@ const priority = {
     'd': 3,
     '^': 3
 };
-
-function replaceAll(str, find, replace) { 
-    return str.replace(new RegExp(find, 'g'), replace);
-}
 
 // Вызов справочника
 if (!threeArgv) {
@@ -47,42 +51,27 @@ if (!threeArgv) {
 }
 
 // Если третий аргумент -> Файл
-else if (threeArgv.endsWith('.txt')) {4
+else if (threeArgv.endsWith('.txt')) {
+    if (!fs.existsSync(threeArgv)) return console.log('The file is not find');
     threeArgv = threeArgv.toLowerCase();
     const contentFile = fs.readFileSync(threeArgv, 'utf8').toLowerCase();
     if (!contentFile.length) return console.log('The file is empty');
-    expression = contentFile.replaceAll('(', ' ( ')
-                            .replaceAll(')', ' ) ')
-                            .replaceAll('+', ' + ')
-                            .replaceAll('-', ' - ')
-                            .replaceAll('*', ' * ')
-                            .replaceAll('/', ' / ')
-                            .replaceAll('^', ' ^ ')
-                            .replaceAll('d', ' d ')
-                            .replaceAll(',', '.')
-                            .trim().split(' ');
+    expression = ReplaceAll(contentFile,['(', ')', '+', '-', '*', '/', '^', 'd', ','], [' ( ', ' ) ', ' + ', ' - ', ' * ', ' / ', ' ^ ', ' d ', '.']);
 }
 
 // Если третий аргумент -> Выражение
 else {
     threeArgv = threeArgv.toLowerCase();
-    expression = threeArgv.replaceAll('(', ' ( ')
-                          .replaceAll(')', ' ) ')
-                          .replaceAll('+', ' + ')
-                          .replaceAll('-', ' - ')
-                          .replaceAll('*', ' * ')
-                          .replaceAll('/', ' / ')
-                          .replaceAll('^', ' ^ ')
-                          .replaceAll('d', ' d ')
-                          .replaceAll(',', '.')
-                          .trim().split(' ');
+    expression = ReplaceAll(threeArgv,['(', ')', '+', '-', '*', '/', '^', 'd', ','], [' ( ', ' ) ', ' + ', ' - ', ' * ', ' / ', ' ^ ', ' d ', '.']);
 }
 
 expression = expression.filter(char => char.length);
-if (expression.filter(chr => chr == '(').length != expression.filter(chr => chr == ')').length) return console.log('(0) The expression is incorrect');
+if (expression.filter(chr => chr == '(').length != expression.filter(chr => chr == ')').length)
+    return console.log('(0) The expression is incorrect');
+
 // Проверка на корректное расположение операций
 for(let index = 0; index < expression.length - 1; index++) {
-    if ('-+*/d^'.includes(expression[index]) && '+*/d^'.includes(expression[index + 1]))
+    if ('-+*/d^'.includes(expression[index]) && '-+*/d^'.includes(expression[index + 1]))
         return console.log('(*) The expression is incorrect');
 }
 
@@ -105,8 +94,7 @@ for(let index = 0; index < expression.length; index++) {
             if ((expression[index - 1] in priority && expression[index - 1] != '-') && expression[index - 1] != ')') return console.log('(3) The expression is incorrect');
 
             while(stack.length && stack[stack.length - 1] != '(') {
-                heap.push(stack[stack.length - 1]); // Последний элемент стэка переносим в heap
-                stack.pop(); // Удаляем последний элемент из стэка
+                heap.push(stack.pop()); // Последний элемент стэка переносим в heap
             }
             stack.pop(); // Удаляем '(' из стэка
             break;
@@ -128,8 +116,7 @@ for(let index = 0; index < expression.length; index++) {
             // Если попалась операция, которая имеет не выше приоритет
             else {
                 while(stack.length && stack[stack.length - 1] != '(' && priority[expression[index]] <= priority[stack[stack.length - 1]]) {
-                    heap.push(stack[stack.length - 1]); // Последний элемент стэка переносим в heap
-                    stack.pop(); // Удаляем последний элемент из стэка
+                    heap.push(stack.pop()); // Последний элемент стэка переносим в heap
                 }
                 stack.push(expression[index]); // Добавляем текущую операцию в стэк
             }
@@ -152,32 +139,46 @@ for(let index = 0; index < expression.length; index++) {
 }
 
 while(stack.length) {
-    heap.push(stack[stack.length - 1]);
-    stack.pop();
+    heap.push(stack.pop());
 }
 
 console.log(':', heap.join(' '));
 
-let index = 0; let result;
-let leftNumber, rightNumber;
-while(heap.length != 1) {
-    leftNumber = heap[index]; rightNumber = heap[index + 1];
-    if (!isNaN(Number(leftNumber)) && !isNaN(Number(rightNumber)) && (heap[index + 2] in priority)) {
-        result = 0;
-        switch(heap[index + 2]) {
-            case '+': { result = leftNumber + rightNumber; break; };
-            case '-': { result = leftNumber - rightNumber; break; };
-            case '*': { result = leftNumber * rightNumber; break; };
-            case '/': { result = leftNumber / rightNumber; break; };
-            case '^': {}
-            case 'd': { result = leftNumber ** rightNumber; break; };
+while(heap.length) {
+    let elem = heap.shift();
+
+    if (!isNaN(Number(elem))) {
+        stack.push(elem);
+        continue;
+    }
+
+    switch(elem) {
+        case '+': { // Если встретилась операция "+"
+            stack.push(stack.pop() + stack.pop());
+            break;
         }
-        heap[index] = result;
-        heap = heap.slice(0, index + 1).concat(heap.slice(index + 3, heap.length));
-        index = 0;
-    } else {
-        index++;
+        case '-': { // Если встретилась операция "-"
+            stack.push(-1 * stack.pop() + stack.pop());
+            break;
+        }
+        case '*': { // Если встретилась операция "*"
+            stack.push(stack.pop() * stack.pop());
+            break;
+        }
+        case '/': { // Если встретилась операция "/"
+            let two = stack.pop();
+            let one = stack.pop();
+            stack.push(one / two);
+            break;
+        }
+        case '^': {}
+        case 'd': { // Если встретилась операция "^"/"d"
+            let two = stack.pop();
+            let one = stack.pop();
+            stack.push(one ** two);
+            break;
+        }
     }
 }
 
-console.log('Answer:', heap[0]);
+console.log(stack[0]);
