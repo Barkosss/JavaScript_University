@@ -106,7 +106,7 @@ switch(method.toLowerCase()) {
     }
 }
 
-for(let i = 0; i < string.length - substring.length + 1; i++) {
+for(let i = 0; i < string.length - substring.length; i++) {
 
     if (sumString == sumSubstring) {
         counter = 0;
@@ -123,22 +123,21 @@ for(let i = 0; i < string.length - substring.length + 1; i++) {
 
     switch(method) {
         case 'h1': {
-            sumString = sumString - string[i].charCodeAt() + string[i + substring.length - 1].charCodeAt();
+            sumString = sumString - string[i].charCodeAt() + string[i + substring.length].charCodeAt();
             break;
         }
 
         case 'h2': {
-            sumString = sumString - (string[i].charCodeAt() ** 2) + (string[i + substring.length - 1].charCodeAt() ** 2);
+            sumString = sumString - (string[i].charCodeAt() ** 2) + (string[i + substring.length].charCodeAt() ** 2);
             break;
         }
 
         case 'h3': {
-            sumString = sumString - (string[i].charCodeAt() ** 2) + (string[i + substring.length - 1].charCodeAt() ** 2);
+            sumString = (sumString - string[i].charCodeAt() * (2**(substring.length - 1))) * 2 + string[i + substring.length].charCodeAt();
             break;
         }
     }
 }
-
 
 time = performance.now() - time; // Конец работы алгоритма
 if (keys.indexOf('-c') != -1) console.log(`Collision: ${counterCollision}`);
