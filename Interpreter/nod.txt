@@ -1,55 +1,37 @@
-.data
-#11 1
-
 .code
 input #1
 input #2
 
-add #4 #1 #2
-// Если сумма равна второму числу -> Вылет
-cmp #4 #2
-je :zero
-// Если сумма равна первому числу -> Вылет
-cmp #4 #1
-je :zero
+cmp #10 #1 #2
+ja #10 :chooseNumber
+jmp :forStart
 
-cmp #1 0
-jge :check
-mul #1 -1
-
-:check
-cmp #2 0
-jge :run
-mul #2 -1
-
-:run
-cmp #1 #2
-jge :start_chooseNumber
-jmp :for_start
-
-:start_chooseNumber
+:chooseNumber
 mov #3 #1
 mov #1 #2
 mov #2 #3
 
-:for_start
-    cmp #1 #2
-    jg :start_chooseNumber
+:forStart
+    cmp #10 #1 #2
+    ja #10 :chooseNumber
     diff #11 #2 #1
-    cmp #11 0
-    je :for_end
-    cmp #11 0
-    jb :abs
-    :absAccepted
+
+    // Если ответ получен
+    cmp #10 #11 0
+    je #10 :forEnd
+    
+    // Если разность меньше 0 -> Модуль
+    jb #10 :absStart
+
+    :absEnd
     mov #2 #11
-    jmp :for_start
-:for_end
+    jmp :forStart
+:forEnd
 
 output Answer:
 output #2
-:zero
 end
 
-:abs
+:absStart
 mul #11 -1
-jmp :absAccepted
+:absEnd

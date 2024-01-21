@@ -186,12 +186,12 @@ while(data[indexCode] != 'end') {
                         }
     
                         data[lendata + cell + 1] = 0;
-                        if (arg1 < arg2) { // Если первый аргумент меньше второго -> 1
+                        if (arg1 < arg2) { // Если первый аргумент меньше второго -> -1
+                            data[lendata + cell + 1] = -1;
+                        } else if (arg1 == arg2) { // Если первый аргумент равно второму -> 0
+                            data[lendata + cell + 1] = 0;
+                        } else if (arg1 > arg2) { // Если первый аргумент больше второму -> 1
                             data[lendata + cell + 1] = 1;
-                        } else if (arg1 == arg2) { // Если первый аргумент равно второму -> 2
-                            data[lendata + cell + 1] = 2;
-                        } else if (arg1 > arg2) { // Если первый аргумент больше второму -> 3
-                            data[lendata + cell + 1] = 3;
                         }
                     } else { // Если первым аргументом указана не ячейка - Ошибка
                         return console.log(`The first argument must be a memory cell. (${indexCode + 1})`);
@@ -200,48 +200,48 @@ while(data[indexCode] != 'end') {
                     break;
                 }
 
-                case 'jb': { // Переход указанная ячейка хранит 1 (первый аргумент меньше второго)
+                case 'jb': { // Переход указанная ячейка хранит -1 (первый аргумент меньше второго)
+                    let [cell, point] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        if (data[lendata + cell + 1] == -1) {
+                            if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
+                            else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
+                        } else { // Если аргументы равны
+                            indexCode++;
+                        }
+                    } else { // Если аргумент не является ячейкой памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    break;
+                }
+
+                case 'je': { // Переход указанная ячейка хранит 0 (первый аргумент равен второму)
+                    let [cell, point] = line.split(' ').slice(1);
+                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
+                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
+                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
+                        if (!data[lendata + cell + 1]) {
+                            if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
+                            else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
+                        } else { // Если аргументы равны
+                            indexCode++;
+                        }
+                    } else { // Если аргумент не является ячейкой памяти
+                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
+                        return;
+                    }
+                    break;
+                }
+
+                case 'ja': { // Переход указанная ячейка хранит 1 (первый аргумент больше второго)
                     let [cell, point] = line.split(' ').slice(1);
                     if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
                         cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
                         if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
                         if (data[lendata + cell + 1] == 1) {
-                            if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
-                            else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
-                        } else { // Если аргументы равны
-                            indexCode++;
-                        }
-                    } else { // Если аргумент не является ячейкой памяти
-                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
-                        return;
-                    }
-                    break;
-                }
-
-                case 'je': { // Переход указанная ячейка хранит 2 (первый аргумент равен второму)
-                    let [cell, point] = line.split(' ').slice(1);
-                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
-                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
-                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
-                        if (data[lendata + cell + 1] == 2) {
-                            if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
-                            else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
-                        } else { // Если аргументы равны
-                            indexCode++;
-                        }
-                    } else { // Если аргумент не является ячейкой памяти
-                        console.log(`The first argument must be a memory cell. (line: ${indexCode + 1})`);
-                        return;
-                    }
-                    break;
-                }
-
-                case 'ja': { // Переход указанная ячейка хранит 3 (первый аргумент больше второго)
-                    let [cell, point] = line.split(' ').slice(1);
-                    if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
-                        cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
-                        if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
-                        if (data[lendata + cell + 1] == 3) {
                             if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
                             else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
                         } else { // Если аргументы равны

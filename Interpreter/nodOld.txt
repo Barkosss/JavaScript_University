@@ -1,0 +1,35 @@
+.data
+#11 1
+
+.code
+input #1
+input #2
+
+cmp #10 #1 #2
+jge #10 :start_chooseNumber
+jmp :for_start
+
+:start_chooseNumber
+mov #3 #1
+mov #1 #2
+mov #2 #3
+
+:for_start
+    cmp #10 #1 #2
+    jg #10 :start_chooseNumber
+    diff #11 #2 #1
+    cmp #10 #11 0
+    je #10 :for_end
+    jb #10 :abs
+    :absAccepted
+    mov #2 #11
+    jmp :for_start
+:for_end
+
+output Answer:
+output #2
+end
+
+:abs
+mul #11 -1
+jmp :absAccepted

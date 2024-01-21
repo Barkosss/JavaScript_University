@@ -1,17 +1,11 @@
 .data
-// fn
 #3 0
-// f1
 #1 0
-// f2
 #2 1
-
 .code
-// n - #4
 input #4
 cmp #4 0
-jb :notZero
-// eax - #5 - Счётчик
+je :end_for
 mov #5 2
 :start_for
     cmp #4 1
@@ -26,5 +20,4 @@ mov #5 2
     jmp :start_for
 :end_for
 output #3
-:notZero
 end
