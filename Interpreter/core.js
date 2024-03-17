@@ -171,14 +171,14 @@ while(data[indexCode] != 'end') {
                         if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
                         
                         if (arg1.startsWith('#')) { // Если первый аргумент - Ячейка памяти
-                            cell = parseInt(arg1.slice(1)); // Берём именно номер ячейки памяти
+                            let cell = parseInt(arg1.slice(1)); // Берём именно номер ячейки памяти
                             if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
                             arg1 = data[lendata + cell + 1];
                         } else {
                             arg1 = parseInt(arg1);
                         }
                         if (arg2.startsWith('#')) { // Если второй аргумент - Ячейка памяти
-                            cell = parseInt(arg2.slice(1)); // Берём именно номер ячейки памяти
+                            let cell = parseInt(arg2.slice(1)); // Берём именно номер ячейки памяти
                             if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`); // Если указана неправильная ячейка памяти
                             arg2 = data[lendata + cell + 1];
                         } else {
@@ -241,7 +241,7 @@ while(data[indexCode] != 'end') {
                     if (cell.startsWith('#')) { // Если аргумент является ячейка памяти
                         cell = parseInt(cell.slice(1)); // Берём именно номер ячейки памяти
                         if (cell < 0 || isNaN(cell)) return console.log(`The wrong memory location is specified. (line: ${indexCode + 1})`);
-                        if (data[lendata + cell + 1] == 1) {
+                        if (data[lendata + cell + 1]) {
                             if (data.indexOf(point) != -1) indexCode = data.indexOf(point); // Если метка найдена
                             else return console.log(`The specified tag "${point}" was not found. (line: ${indexCode + 1})`); // Если метка не найдена
                         } else { // Если аргументы равны
@@ -275,3 +275,4 @@ while(data[indexCode] != 'end') {
         }
     }
 }
+console.log('Process exited normally.');

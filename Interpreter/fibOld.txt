@@ -1,0 +1,49 @@
+.data
+#3 0
+#1 0
+#2 1
+.code
+input #4
+cmp #4 0
+je :end_for
+mov #5 2
+:start_for
+    cmp #4 1
+    je :end_for
+    mov #6 #1
+    add #1 #1 #2
+    mov #3 #1
+    mov #2 #6
+    cmp #5 #4
+    je :end_for
+    add #5 #5 1
+    jmp :start_for
+:end_for
+output #3
+end
+
+.code
+mov #1 0
+mov #2 1
+mov #3 0
+
+input #4
+cmp #11 #4 0
+je #11 :forEnd
+
+mov #5 2
+
+:forStart
+    mov #6 1
+    add #1 #1 #2
+    mov #3 #1
+    mov #2 #6
+    cmp #11 #5 #4
+    ja #11 :forEnd
+
+    add #5 #5 1
+    jmp :forStart
+:forEnd
+
+output #3
+end

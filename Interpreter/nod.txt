@@ -15,7 +15,6 @@ mov #2 #3
     cmp #10 #1 #2
     ja #10 :chooseNumber
     diff #11 #2 #1
-
     // Если ответ получен
     cmp #10 #11 0
     je #10 :forEnd
@@ -34,4 +33,4 @@ end
 
 :absStart
 mul #11 -1
-:absEnd
+jmp :absEnd
